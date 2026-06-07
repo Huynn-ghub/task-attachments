@@ -1,41 +1,146 @@
 @import "tailwindcss";
 
-@theme {
-  --color-brand: #5E72E4;
-  --color-success: #2DCE89;
-  --color-warning: #FB6340;
-  --color-text-main: #32325D;
-  --color-text-muted: #8898AA;
-  --color-border: #E1E8ED;
-  --color-bg-main: #F4F7F9;
+:root {
+  --color-brand: #6366f1; /* Modern Indigo */
+  --color-brand-hover: #4f46e5;
+  --color-success: #10b981; /* Emerald */
+  --color-warning: #f59e0b; /* Amber */
+  --color-danger: #ef4444; /* Rose */
+  --color-bg-main: #f8fafc; /* Slate 50 */
+  --color-bg-card: #ffffff;
+  --color-text-main: #0f172a; /* Slate 900 */
+  --color-text-muted: #64748b; /* Slate 500 */
+  --color-border: #e2e8f0; /* Slate 200 */
+  --color-sidebar-bg: #ffffff;
+  --color-header-bg: rgba(255, 255, 255, 0.85);
+  --color-input-bg: #f8fafc;
+  --color-input-border: #cbd5e1;
+  --color-chat-bubble-self: #6366f1;
+  --color-chat-bubble-other: #f1f5f9;
+  --color-chat-text-other: #334155;
   
-  --font-sans: 'Helvetica Neue', Arial, sans-serif;
+  --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+  --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.05), 0 2px 4px -2px rgb(0 0 0 / 0.05);
+  --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.04), 0 4px 6px -4px rgb(0 0 0 / 0.04);
+  --shadow-glow: 0 0 20px -3px rgba(99, 102, 241, 0.15);
+  
+  --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
+  --font-display: 'Outfit', 'Inter', system-ui, sans-serif;
+}
+
+.dark {
+  --color-bg-main: #090d16; /* Deep space dark */
+  --color-bg-card: rgba(20, 27, 45, 0.7); /* Deep slate translucent */
+  --color-text-main: #f8fafc; /* Slate 50 */
+  --color-text-muted: #94a3b8; /* Slate 400 */
+  --color-border: rgba(255, 255, 255, 0.08);
+  --color-sidebar-bg: #0b0f19;
+  --color-header-bg: rgba(11, 15, 25, 0.75);
+  --color-input-bg: rgba(15, 23, 42, 0.5);
+  --color-input-border: rgba(255, 255, 255, 0.1);
+  --color-brand: #818cf8; /* Light indigo */
+  --color-brand-hover: #6366f1;
+  --color-chat-bubble-self: #6366f1;
+  --color-chat-bubble-other: rgba(30, 41, 59, 0.75);
+  --color-chat-text-other: #f8fafc;
+  
+  --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.5);
+  --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.3), 0 2px 4px -2px rgb(0 0 0 / 0.3);
+  --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.5), 0 4px 6px -4px rgb(0 0 0 / 0.5);
+  --shadow-glow: 0 0 25px rgba(99, 102, 241, 0.2);
+}
+
+@theme {
+  --color-brand: var(--color-brand);
+  --color-brand-hover: var(--color-brand-hover);
+  --color-success: var(--color-success);
+  --color-warning: var(--color-warning);
+  --color-danger: var(--color-danger);
+  
+  --color-bg-main: var(--color-bg-main);
+  --color-bg-card: var(--color-bg-card);
+  --color-text-main: var(--color-text-main);
+  --color-text-muted: var(--color-text-muted);
+  --color-border: var(--color-border);
+  --color-sidebar-bg: var(--color-sidebar-bg);
+  --color-header-bg: var(--color-header-bg);
+  --color-input-bg: var(--color-input-bg);
+  --color-input-border: var(--color-input-border);
+  --color-chat-bubble-self: var(--color-chat-bubble-self);
+  --color-chat-bubble-other: var(--color-chat-bubble-other);
+  --color-chat-text-other: var(--color-chat-text-other);
+  
+  --font-sans: var(--font-sans);
+  --font-display: var(--font-display);
 }
 
 @layer base {
   body {
-    @apply bg-[var(--color-bg-main)] text-[var(--color-text-main)] font-sans;
+    @apply bg-bg-main text-text-main font-sans transition-colors duration-300;
   }
 }
 
 @layer components {
+  /* Premium glass card */
   .geo-card {
-    @apply bg-white border border-[var(--color-border)] p-6 rounded-none flex flex-col;
+    @apply bg-bg-card border border-border p-6 rounded-2xl flex flex-col shadow-md backdrop-blur-md transition-all duration-300;
+  }
+  
+  .geo-card:hover {
+    @apply shadow-lg border-brand/20;
   }
   
   .geo-card-title {
-    @apply text-[12px] uppercase tracking-[1px] text-[var(--color-text-muted)] mb-4 font-bold;
+    @apply text-xs uppercase tracking-wider text-text-muted mb-4 font-bold font-display flex items-center gap-2;
   }
   
   .geo-btn-primary {
-    @apply bg-[var(--color-brand)] text-white px-5 py-2.5 text-[13px] font-semibold border-none rounded-none cursor-pointer transition-opacity hover:opacity-90 disabled:opacity-50;
+    @apply bg-brand text-white px-5 py-2.5 text-xs font-bold uppercase tracking-wider rounded-xl cursor-pointer shadow-md shadow-brand/10 hover:bg-brand-hover hover:shadow-lg hover:shadow-brand/20 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed;
   }
   
   .geo-nav-item {
-    @apply px-4 py-2.5 text-sm text-[#525F7F] border-l-3 border-transparent cursor-pointer transition-all;
+    @apply px-4 py-3 text-sm text-text-muted rounded-xl flex items-center gap-3 cursor-pointer transition-all duration-200 hover:bg-brand/5 hover:text-brand font-medium;
   }
   
   .geo-nav-item-active {
-    @apply bg-[#F6F9FC] text-[var(--color-brand)] border-l-[var(--color-brand)] font-semibold;
+    @apply bg-brand/10 text-brand font-semibold shadow-inner shadow-brand/5;
   }
+  
+  /* Additional Premium Utilities */
+  .glass-panel {
+    @apply bg-bg-card/75 border border-border/80 backdrop-blur-lg shadow-lg rounded-2xl;
+  }
+  
+  .glass-header {
+    @apply bg-header-bg border-b border-border/60 backdrop-blur-md sticky top-0 z-40;
+  }
+  
+  .glow-ring:focus {
+    @apply ring-2 ring-brand/50 border-brand outline-none;
+    box-shadow: var(--shadow-glow);
+  }
+
+  /* Custom input design */
+  .premium-input {
+    @apply w-full px-4 py-2.5 bg-input-bg border border-input-border text-text-main text-sm rounded-xl transition-all duration-200 focus:border-brand focus:ring-2 focus:ring-brand/20 outline-none placeholder:text-text-muted/60;
+  }
+}
+
+/* Beautiful custom thin scrollbars */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--color-border);
+  border-radius: 9999px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-brand);
 }

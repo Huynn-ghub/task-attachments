@@ -1,7 +1,8 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { getSupabase } from '../lib/supabase.ts';
-import { Send, MessageSquare } from 'lucide-react';
+import { Send, MessageSquare, Users, User, ArrowRight } from 'lucide-react';
 import type { RealtimeChannel } from '@supabase/supabase-js';
+import { motion } from 'motion/react';
 
 interface BroadcastMessage {
   id: string;
@@ -91,89 +92,172 @@ export const ChatBox: React.FC = () => {
     }
   };
 
+  const getInitials = (name: string) => {
+    if (!name) return '?';
+    return name.slice(0, 2).toUpperCase();
+  };
+
   return (
-    <div className="w-full bg-white border border-[var(--color-border)] flex flex-col h-full overflow-hidden">
-      <div className="p-4 border-b border-[var(--color-border)] bg-[#F8F9FA] flex flex-col gap-3">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <MessageSquare className="w-4 h-4 text-[var(--color-brand)]" />
-            <span className="text-xs font-bold uppercase tracking-widest text-[#32325D]">Phòng Chat Chung</span>
-          </div>
-          {userName && (
-            <button
-              onClick={() => setIsSettingName(true)}
-              className="text-[10px] text-gray-400 hover:text-[var(--color-brand)] font-bold uppercase"
-            >
-              Đổi tên
-            </button>
-          )}
-        </div>
-        <div className="flex items-center gap-2 overflow-x-auto py-1">
-          <div className="flex items-center gap-1.5 shrink-0 px-2 py-1 bg-green-50 rounded-full border border-green-100">
-            <div className="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse"></div>
-            <span className="text-[9px] font-bold text-green-700 uppercase tracking-tighter">{onlineUsers.length} Online</span>
-          </div>
-          {onlineUsers.slice(0, 5).map((user, idx) => (
-            <span key={idx} className="text-[9px] text-gray-400 font-medium bg-gray-50 px-1.5 py-0.5 rounded italic">
-              {user === userName ? 'Ban' : user}
-            </span>
-          ))}
-          {onlineUsers.length > 5 && <span className="text-[9px] text-gray-300">+{onlineUsers.length - 5}</span>}
-        </div>
-      </div>
-      <div className="flex-1 overflow-y-auto p-4 space-y-4" ref={scrollRef}>
-        {messages.length === 0 && (
-          <p className="text-center text-[11px] text-gray-300 uppercase tracking-widest py-8">Chua co tin nhan</p>
-        )}
-        {messages.map((msg) => (
-          <div key={msg.id} className={`flex flex-col ${msg.user_name === userName ? 'items-end' : 'items-start'}`}>
-            <div className="flex items-center gap-1.5 mb-1">
-              <span className="text-[10px] font-bold text-gray-400 tracking-tight uppercase">{msg.user_name}</span>
-              <span className="text-[9px] text-gray-300">
-                {new Date(msg.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-              </span>
+    <div className="w-full bg-bg-card border border-border flex flex-col h-full rounded-2xl overflow-hidden shadow-lg transition-colors duration-300">
+      {isSettingName ? (
+        <div className="flex-1 flex items-center justify-center p-6 bg-gradient-to-tr from-brand/5 to-indigo-500/5">
+          <motion.div 
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            className="w-full max-w-sm glass-panel p-8 flex flex-col items-center text-center border-border"
+          >
+            <div className="w-16 h-16 bg-brand/10 text-brand rounded-2xl flex items-center justify-center mb-4 shadow-inner">
+              <User className="w-8 h-8" />
             </div>
-            <div className={`max-w-[60%] px-3 py-2 text-sm ${
-              msg.user_name === userName
-                ? 'bg-[var(--color-brand)] text-white'
-                : 'bg-[#F6F9FC] text-[#525F7F] border border-[var(--color-border)]'
-            }`}>
-              {msg.content}
-            </div>
-          </div>
-        ))}
-      </div>
-      <div className="p-4 border-t border-[var(--color-border)] bg-gray-50">
-        {isSettingName ? (
-          <form onSubmit={handleSetName} className="space-y-2">
-            <p className="text-[10px] uppercase font-bold text-gray-400 text-center tracking-widest">Nhap ten de bat dau chat</p>
-            <div className="flex gap-2">
+            
+            <h3 className="font-extrabold text-xl tracking-tight text-text-main font-display mb-1">
+              Bắt đầu tham gia Chat
+            </h3>
+            <p className="text-text-muted text-xs mb-6">
+              Nhập biệt danh của bạn để bắt đầu trò chuyện trực tuyến với mọi người trong phòng chat chung.
+            </p>
+
+            <form onSubmit={handleSetName} className="w-full space-y-3">
               <input
                 type="text"
                 value={tempName}
                 onChange={(e) => setTempName(e.target.value)}
-                placeholder="Biet danh..."
-                className="flex-1 px-3 py-2 text-xs border border-[var(--color-border)] focus:border-[var(--color-brand)] outline-none"
+                placeholder="Nhập biệt danh của bạn..."
+                className="premium-input text-center font-semibold tracking-wide"
+                maxLength={25}
                 required
               />
-              <button type="submit" className="geo-btn-primary !px-3">OK</button>
+              <button 
+                type="submit" 
+                className="geo-btn-primary w-full flex items-center justify-center gap-2 py-3"
+              >
+                Bắt đầu ngay <ArrowRight className="w-4 h-4" />
+              </button>
+            </form>
+          </motion.div>
+        </div>
+      ) : (
+        <>
+          {/* Chat Header */}
+          <div className="p-4 border-b border-border bg-bg-card/90 backdrop-blur-md flex flex-col gap-3.5">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2.5">
+                <div className="p-2 bg-brand/10 text-brand rounded-xl">
+                  <MessageSquare className="w-4 h-4" />
+                </div>
+                <div>
+                  <h4 className="text-xs font-black uppercase tracking-wider text-text-main font-display">
+                    Phòng Chat Chung
+                  </h4>
+                  <p className="text-[10px] text-text-muted">
+                    Nickname: <span className="font-bold text-brand">{userName}</span>
+                  </p>
+                </div>
+              </div>
+              <button
+                onClick={() => setIsSettingName(true)}
+                className="text-[10px] text-text-muted hover:text-brand font-extrabold uppercase tracking-wider bg-input-bg border border-input-border px-3 py-1.5 rounded-lg transition-colors cursor-pointer"
+              >
+                Đổi tên
+              </button>
             </div>
-          </form>
-        ) : (
-          <form onSubmit={handleSendMessage} className="flex gap-2">
-            <input
-              type="text"
-              value={newMessage}
-              onChange={(e) => setNewMessage(e.target.value)}
-              placeholder="Nhap noi dung..."
-              className="flex-1 px-3 py-2 text-xs border border-[var(--color-border)] focus:border-[var(--color-brand)] outline-none"
-            />
-            <button type="submit" className="geo-btn-primary !p-2">
-              <Send className="w-4 h-4" />
-            </button>
-          </form>
-        )}
-      </div>
+
+            {/* Online status lists */}
+            <div className="flex items-center gap-2 overflow-x-auto py-1">
+              <div className="flex items-center gap-1.5 shrink-0 px-2.5 py-1 bg-emerald-500/10 dark:bg-emerald-500/20 border border-emerald-500/20 rounded-full">
+                <span className="relative flex h-1.5 w-1.5">
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                  <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-emerald-500"></span>
+                </span>
+                <span className="text-[9px] font-extrabold text-emerald-600 dark:text-emerald-400 uppercase tracking-wider">
+                  {onlineUsers.length} Online
+                </span>
+              </div>
+              {onlineUsers.map((user, idx) => (
+                <div 
+                  key={idx} 
+                  className="text-[9px] text-text-muted font-bold bg-input-bg border border-input-border px-2.5 py-1 rounded-full shrink-0 flex items-center gap-1"
+                >
+                  <div className="w-3 h-3 bg-brand/15 text-brand text-[8px] flex items-center justify-center rounded-full font-black">
+                    {getInitials(user)[0]}
+                  </div>
+                  <span>{user === userName ? 'Bạn' : user}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Chat Messages */}
+          <div className="flex-1 overflow-y-auto p-4 space-y-4 bg-bg-main/30" ref={scrollRef}>
+            {messages.length === 0 && (
+              <div className="flex flex-col items-center justify-center py-20 text-text-muted/40">
+                <Users className="w-10 h-10 mb-2" />
+                <p className="text-center text-[10px] font-bold uppercase tracking-wider">
+                  Chưa có tin nhắn nào. Hãy mở lời chào!
+                </p>
+              </div>
+            )}
+            {messages.map((msg) => {
+              const isSelf = msg.user_name === userName;
+              return (
+                <div 
+                  key={msg.id} 
+                  className={`flex items-start gap-2.5 max-w-[85%] ${
+                    isSelf ? 'ml-auto flex-row-reverse' : ''
+                  }`}
+                >
+                  {/* Message Avatar */}
+                  <div className={`w-8 h-8 rounded-xl font-extrabold text-xs flex items-center justify-center shrink-0 shadow-sm ${
+                    isSelf 
+                      ? 'bg-brand text-white' 
+                      : 'bg-indigo-500/10 text-brand border border-brand/10'
+                  }`}>
+                    {getInitials(msg.user_name)}
+                  </div>
+
+                  {/* Message Bubble Container */}
+                  <div className={`flex flex-col ${isSelf ? 'items-end' : 'items-start'}`}>
+                    <div className="flex items-center gap-1.5 mb-1">
+                      <span className="text-[9px] font-extrabold text-text-muted uppercase tracking-tight">
+                        {msg.user_name}
+                      </span>
+                      <span className="text-[8px] text-text-muted/60">
+                        {new Date(msg.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                      </span>
+                    </div>
+                    <div className={`px-4 py-2.5 text-sm shadow-sm leading-relaxed ${
+                      isSelf
+                        ? 'bg-gradient-to-tr from-brand to-indigo-600 text-white rounded-2xl rounded-tr-sm'
+                        : 'bg-chat-bubble-other text-chat-text-other border border-border rounded-2xl rounded-tl-sm'
+                    }`}>
+                      {msg.content}
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+
+          {/* Chat Input */}
+          <div className="p-4 border-t border-border bg-bg-card">
+            <form onSubmit={handleSendMessage} className="flex gap-2">
+              <input
+                type="text"
+                value={newMessage}
+                onChange={(e) => setNewMessage(e.target.value)}
+                placeholder="Nhập nội dung tin nhắn..."
+                className="premium-input"
+              />
+              <button 
+                type="submit" 
+                className="geo-btn-primary !p-3.5 flex items-center justify-center shrink-0"
+              >
+                <Send className="w-4 h-4" />
+              </button>
+            </form>
+          </div>
+        </>
+      )}
     </div>
   );
 };
